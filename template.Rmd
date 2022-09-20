@@ -8,8 +8,6 @@ library(tidyverse)
 ```
 
 
-
-
 ## Data Import: CSVs
 
 Lets import data using the `reader` package
@@ -45,7 +43,43 @@ read_csv("data/FAS_litters.csv", na = c("", "NA", 999, 88), skip = 2)
 
 ## Data import - other formats
 
+We need to read in an excel spreadsheet ...
+
+```{r}
+library(readxl)
+```
 
 
+```{r}
+mlb_df = read_excel("data/mlb11.xlsx")
+```
 
+```{r, eval = FALSE}
+view(mlb_df)
+```
+
+```{r}
+lotr_words_df = read_excel(
+  "data/LotR_Words.xlsx",
+  range = "B3:D6"
+)
+
+lotr_words_df
+```
+
+
+## Still more formats ...
+
+Read in a SAS dataset.
+
+```{r}
+library(haven)
+```
+
+
+```{r}
+pulse_df = read_sas("data/public_pulse_data.sas7bdat")
+
+pulse_df
+```
 

@@ -126,3 +126,25 @@ Data summary
 | pups_born_alive |         0 |          1.00 |  7.35 | 1.76 |  3.0 |  6.00 |  8.00 |  8.00 | 11.0 | ▁▃▂▇▁ |
 | pups_dead_birth |         0 |          1.00 |  0.33 | 0.75 |  0.0 |  0.00 |  0.00 |  0.00 |  4.0 | ▇▂▁▁▁ |
 | pups_survive    |         0 |          1.00 |  6.41 | 2.05 |  1.0 |  5.00 |  7.00 |  8.00 |  9.0 | ▁▃▂▇▇ |
+
+`read_csv` iotions ..
+
+``` r
+read_csv("data/FAS_litters.csv", na = c("", "NA", 999, 88), skip = 2)
+```
+
+## Data import - other formats
+
+We need to read in an excel spreadsheet …
+
+``` r
+library(readxl)
+```
+
+``` r
+mlb_df = read_excel("data/mlb11.xlsx")
+```
+
+``` r
+view(mlb_df)
+```
