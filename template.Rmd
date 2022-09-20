@@ -4,3 +4,10 @@ output: github_document
 ---
 
 ## Data Import: CSVs
+
+Lets import data using the `reader` package
+
+```{r}
+read.csv()
+```
+
