@@ -3,11 +3,49 @@ title: "Data Import"
 output: github_document
 ---
 
+```{r}
+library(tidyverse)
+```
+
+
+
+
 ## Data Import: CSVs
 
 Lets import data using the `reader` package
 
 ```{r}
-read.csv()
+litters_df = read_csv("data/FAS_litters.csv")
+litters_df = janitor::clean_names(litters_df)
 ```
+
+```{r}
+litters_df
+
+head(litters_df)
+tail(litters_df)
+
+```
+
+```{r, eval = FALSE}
+View(litters_df)
+```
+
+```{r}
+skimr::skim(litters_df)
+
+```
+
+`read_csv` iotions ..
+
+```{r, eval = FALSE}
+read_csv("data/FAS_litters.csv", na = c("", "NA", 999, 88), skip = 2)
+```
+
+
+## Data import - other formats
+
+
+
+
 
