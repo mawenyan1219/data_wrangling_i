@@ -1,0 +1,183 @@
+---
+title: "data manipulation with 'dplyr'"
+output: github_document
+date: "2022-09-22"
+---
+
+```{r setup, echo=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+
+options(tibble.print_min = 3)
+
+litters_data = read_csv("./data/FAS_litters.csv",
+  col_types = "ccddiiii")
+litters_data = janitor::clean_names(litters_data)
+
+pups_data = read_csv("./data/FAS_pups.csv",
+  col_types = "ciiiii")
+pups_data = janitor::clean_names(pups_data)
+
+```
+
+
+## select
+
+can select a subset of data, specify which columns you want to keep
+```{r}
+select(litters_data, group, litter_number, gd0_weight, pups_born_alive)
+```
+
+select a range of columns to include:
+```{r}
+select(litters_data, group:gd_of_birth)
+```
+
+specify R which column you don't want to include, can delete multiple variables in one line:
+```{r}
+select(litters_data, -pups_survive)
+```
+
+rename the variable:
+```{r}
+select(litters_data, GROUP = group, LiTtEr_NuMbEr = litter_number)
+```
+
+also can use "rename" feature:
+```{r}
+rename(litters_data, GROUP = group, LiTtEr_NuMbEr = litter_number)
+```
+
+if variables are named with suffixes or other standard patterns and want to select those variables:
+```{r}
+select(litters_data, starts_with("gd"), ends_with("weight"))
+
+```
+
+to reorganize columns:
+```{r}
+select(litters_data, litter_number, pups_survive, everything())
+```
+
+also can use "relocate":
+```{r}
+relocate(litters_data, litter_number, pups_survive)
+```
+
+## filter
+
+some filter options:
+gd_of_birth == 20
+pups_born_alive >= 2
+pups_survive != 4
+!(pups_survive == 4)
+group %in% c("Con7", "Con8")
+group == "Con7" & gd_of_birth == 20
+
+```{r}
+filter(litters_data, group == "Con7" & gd_of_birth == 20)
+```
+
+
+also can use `drop`:
+
+remove any row with a missing value:
+```{r}
+drop_na(litters_data)
+```
+
+remove rows for which wt_increase is missing (see p8105 webpage):
+
+
+## mutate
+
+```{r}
+mutate(litters_data,
+  wt_gain = gd18_weight - gd0_weight,
+  group = str_to_lower(group)
+)
+```
+
+
+## arrange
+```{r}
+head(arrange(litters_data, group, pups_born_alive), 10)
+```
+
+
+## %>%
+
+example 1:
+```{r}
+litters_data_raw = read_csv("./data/FAS_litters.csv",
+  col_types = "ccddiiii")
+litters_data_clean_names = janitor::clean_names(litters_data_raw)
+litters_data_selected_cols = select(litters_data_clean_names, -pups_survive)
+litters_data_with_vars = 
+  mutate(
+    litters_data_selected_cols, 
+    wt_gain = gd18_weight - gd0_weight,
+    group = str_to_lower(group))
+litters_data_with_vars_without_missing = 
+  drop_na(litters_data_with_vars, wt_gain)
+litters_data_with_vars_without_missing
+```
+
+example 2:
+```{r}
+litters_data_clean = 
+  drop_na(
+    mutate(
+      select(
+        janitor::clean_names(
+          read_csv("./data/FAS_litters.csv", col_types = "ccddiiii")
+          ), 
+      -pups_survive
+      ),
+    wt_gain = gd18_weight - gd0_weight,
+    group = str_to_lower(group)
+    ),
+  wt_gain
+  )
+```
+
+
+better approach using `%>%`
+```{r}
+litters_data = 
+  read_csv("./data/FAS_litters.csv", col_types = "ccddiiii") %>%
+  janitor::clean_names() %>%
+  select(-pups_survive) %>%
+  mutate(
+    wt_gain = gd18_weight - gd0_weight,
+    group = str_to_lower(group)) %>% 
+  drop_na(wt_gain)
+```
+
+
+using `.`:
+```{r}
+litters_data = 
+  read_csv("./data/FAS_litters.csv", col_types = "ccddiiii") %>%
+  janitor::clean_names(dat = .) %>%
+  select(.data = ., -pups_survive) %>%
+  mutate(.data = .,
+    wt_gain = gd18_weight - gd0_weight,
+    group = str_to_lower(group)) %>% 
+  drop_na(data = ., wt_gain)
+```
+
+another example:
+```{r}
+litters_data %>%
+  lm(wt_gain ~ pups_born_alive, data = .) %>%
+  broom::tidy()
+```
+
+
+
+
+
